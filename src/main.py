@@ -81,6 +81,7 @@ def main():
 
             f = open("ascii_cipher.txt", "w")
             f.write('Public Key: {' + str(publicKey['e']) + ', ' + str(publicKey['n']) + '}\n')
+            f.write('Private Key: {' + str(privateKey['d']) + ', ' + str(privateKey['n']) + '}\n')
             f.write('ASCII Cipher: ')
             f.write(', '.join([str(elem) for i,elem in enumerate(asciiCipherText)]))
             f.close()
@@ -91,14 +92,6 @@ def main():
                 cipherText = 'Could not convert to text, see ASCII output'
             window['-chipertext-'].update(cipherText)
     window.close()
-
-    # Decrypt
-    # asciiDecrypted = []
-    # for i in asciiCipherText:
-    #     asciiDecrypted.append(power(i, publicKey['e'], publicKey['n']))
-
-    # print(asciiDecrypted)
-    # print(asciiToText(asciiDecrypted))
 
 if __name__ == "__main__":
     main()
