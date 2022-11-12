@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+
 def power(x, y, p):
     result = 1
     x %= p
@@ -17,5 +19,16 @@ def gcd(a, b):
         b = r
     return a
 
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
 def relativelyPrime(e, phi):
     return gcd(e, phi) == 1
+
+def modInverse(a, m):
+    g, x, y = egcd(a, m)
+    return x % m
