@@ -80,6 +80,8 @@ def main():
                 asciiCipherText.append(power(i, privateKey['d'], privateKey['n']))
 
             f = open("ascii_cipher.txt", "w")
+            f.write('Public Key: {' + str(publicKey['e']) + ', ' + str(publicKey['n']) + '}\n')
+            f.write('ASCII Cipher: ')
             f.write(', '.join([str(elem) for i,elem in enumerate(asciiCipherText)]))
             f.close()
 
