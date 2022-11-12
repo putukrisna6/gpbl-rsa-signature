@@ -29,8 +29,8 @@ def getE(phiN):
 def getD(e, phiN):
     return modInverse(e, phiN)
 
-def getKeys():
-    p, q = getTwoPrimes(200)
+def getKeys(startPrime):
+    p, q = getTwoPrimes(startPrime)
     n = p * q
     resultPhiN = phi(p, q)
     e = getE(resultPhiN)
@@ -42,32 +42,61 @@ def getKeys():
     return publicKey, privateKey
 
 def main():
-    publicKey, privateKey = getKeys()
+    sg.theme('LightBlue 1')
+    layout = [[sg.Text('Prime start: '), sg.Text(size=(1,1)), sg.Input(key='-primefrom-')],
+            [sg.Text('Public Key: '), sg.Text(size=(50,1), key='-pubkey-')],
+            [sg.Text('Private Key: '), sg.Text(size=(50,1), key='-prikey-')],
+            [sg.Button('Generate Keys')],
+            [sg.Text('Plain text: '), sg.Text(size=(1,1)), sg.Input(key='-plaintext-')],
+            [sg.Text('Cipher text: '), sg.Text(size=(50,1), key='-chipertext-')],
+            [sg.Button('Encrypt'), sg.Button('Close')]
+            ]
 
-    print('public key: ', publicKey)
-    print('private key:', privateKey)
+    window = sg.Window('Digital Signature', layout, [50,20])
 
-    plainText = "No class for today"
-    asciiPlainText = textToAscii(plainText)
-    print(asciiPlainText)
+    while True:
+        event, values = window.read()
 
-    # Encrypt
-    asciiCipherText = []
-    for i in asciiPlainText:
-        asciiCipherText.append(power(i, privateKey['d'], privateKey['n']))
+        if event == sg.WIN_CLOSED or event == 'Close':
+            break
+            
+        if event == 'Generate Keys':
+            try:
+                startPrime = int(values['-primefrom-'])
+                publicKey, privateKey = getKeys(startPrime)
+            except:
+                publicKey, privateKey = 'ERROR', 'ERROR'
 
-    print(asciiCipherText)
+            window['-pubkey-'].update(publicKey)
+            window['-prikey-'].update(privateKey)
 
-    cipherText = asciiToText(asciiCipherText) 
-    print(str(cipherText))
+        if event == 'Encrypt':
+            plainText = values['-plaintext-']
+
+            # Encrypt
+            asciiPlainText = textToAscii(plainText)
+            asciiCipherText = []
+            for i in asciiPlainText:
+                asciiCipherText.append(power(i, privateKey['d'], privateKey['n']))
+
+            f = open("ascii_cipher.txt", "w")
+            f.write(', '.join([str(elem) for i,elem in enumerate(asciiCipherText)]))
+            f.close()
+
+            try:
+                cipherText = asciiToText(asciiCipherText) 
+            except:
+                cipherText = 'Could not convert to text, see ASCII output'
+            window['-chipertext-'].update(cipherText)
+    window.close()
 
     # Decrypt
-    asciiDecrypted = []
-    for i in asciiCipherText:
-        asciiDecrypted.append(power(i, publicKey['e'], publicKey['n']))
+    # asciiDecrypted = []
+    # for i in asciiCipherText:
+    #     asciiDecrypted.append(power(i, publicKey['e'], publicKey['n']))
 
-    print(asciiDecrypted)
-    print(asciiToText(asciiDecrypted))
+    # print(asciiDecrypted)
+    # print(asciiToText(asciiDecrypted))
 
 if __name__ == "__main__":
     main()
