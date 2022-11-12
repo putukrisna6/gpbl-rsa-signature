@@ -1,3 +1,5 @@
+import PySimpleGUI as sg
+
 NUMBER_OF_EVALUATION = 4
 
 from algorithms.millerRabin import isPrime
@@ -27,18 +29,23 @@ def getE(phiN):
 def getD(e, phiN):
     return modInverse(e, phiN)
 
-def main():
+def getKeys():
     p, q = getTwoPrimes(200)
     n = p * q
     resultPhiN = phi(p, q)
     e = getE(resultPhiN)
     d = getD(e, resultPhiN)
 
-    publicKey = [e, n]
-    privateKey = [d, n]
+    publicKey = {'e': e, 'n': n}
+    privateKey = {'d': d, 'n': n}
 
-    print(publicKey)
-    print(privateKey)
+    return publicKey, privateKey
+
+def main():
+    publicKey, privateKey = getKeys()
+
+    print('public key: ', publicKey)
+    print('private key:', privateKey)
 
     plainText = "No class for today"
     asciiPlainText = textToAscii(plainText)
@@ -47,7 +54,7 @@ def main():
     # Encrypt
     asciiCipherText = []
     for i in asciiPlainText:
-        asciiCipherText.append(power(i, e, n))
+        asciiCipherText.append(power(i, privateKey['d'], privateKey['n']))
 
     print(asciiCipherText)
 
@@ -57,7 +64,7 @@ def main():
     # Decrypt
     asciiDecrypted = []
     for i in asciiCipherText:
-        asciiDecrypted.append(power(i, d, n))
+        asciiDecrypted.append(power(i, publicKey['e'], publicKey['n']))
 
     print(asciiDecrypted)
     print(asciiToText(asciiDecrypted))
